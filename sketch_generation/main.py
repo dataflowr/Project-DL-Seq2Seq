@@ -38,10 +38,10 @@ eta_min = 0.01
 R_step =  0.99995
 learning_rate = 0.0008
 clip = 1.
-epochs = 60
+epochs = 200
 
 print_every = batch_size*200 # print loss after this much iteration, change the multiplier aacording to dataset
-plot_every = 1 # plot the strokes using current trained model
+plot_every = 10 # plot the strokes using current trained model
 
 rnn_dir = 2 # 1 for unidirection,  2 for bi-direction
 bi_mode = 2 # bidirectional mode:- 1 for addition 2 for concatenation
@@ -72,7 +72,7 @@ for epoch in range(epochs):
     start = time.time()
     
     print_loss_total, print_LRloss_total, print_KLloss_total = [], [], []
-    print ('ep  t<taken  left>    data seen    tr_err  tr_LR   tr_LKL')
+    print ('\nep  \ttime&left \t\tdata seen    \ttr_err  \ttr_LR   \ttr_LKL')
     
     for batch_id in range(0, num_mini_batch, batch_size):
         
@@ -96,7 +96,8 @@ for epoch in range(epochs):
         loss_lr, loss_kl = skrnn_loss(gmm_params, [mu,sigma], inp_dec[:,1:,], device=device)
         loss_kl = torch.max(loss_kl, torch.tensor(kl_tolerance, dtype=torch.float, device=device))
         
-        eta_step = 1 - (1-eta_min)*R_step
+        # qanREIVIEW modified R_step to R**epoch
+        eta_step = 1 - (1-eta_min)*R_step**epoch
         
         loss = loss_lr + weight_kl*eta_step*loss_kl
 
@@ -112,7 +113,7 @@ for epoch in range(epochs):
         
         if batch_id % print_every == 0 and batch_id>0:
 
-            print('%d   %s  (%d %d%%)  %.4f  %.4f  %.4f' % (epoch,timeSince(start, batch_id / num_mini_batch),
+            print('%2d   \t%s  \t(%d %d%%)  \t%.4f  \t%.4f  \t%.4f' % (epoch+1,timeSince(start, batch_id / num_mini_batch),
                                            batch_id, batch_id / num_mini_batch * 100, np.mean(print_loss_total),
                                            np.mean(print_LRloss_total), np.mean(print_KLloss_total)))
 
