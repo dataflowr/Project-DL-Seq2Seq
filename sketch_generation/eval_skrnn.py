@@ -79,12 +79,12 @@ def load_pretrained_uncond(data_type):
                             latent_dim = latent_dim, device = device, cond_gen= cond_gen).to(device)
 
     if data_type == 'cat':
-        encoder.load_state_dict(torch.load('saved_model/UncondEnc_cat.pt',map_location='cuda:0')['model'])
-        decoder.load_state_dict(torch.load('saved_model/UncondDec_cat.pt',map_location='cuda:0')['model'])
+        encoder.load_state_dict(torch.load('saved_model/UncondEnc_cat.pt', map_location='cuda:0')['model'])
+        decoder.load_state_dict(torch.load('saved_model/UncondDec_cat.pt', map_location='cuda:0')['model'])
         data_enc, data_dec, max_seq_len = get_data(data_type='cat')
     else:
-        encoder.load_state_dict(torch.load('saved_model/UncondEnc_kanji.pt')['model'])
-        decoder.load_state_dict(torch.load('saved_model/UncondDec_kanji.pt')['model'])
+        encoder.load_state_dict(torch.load('saved_model/UncondEnc_kanji.pt', map_location='cuda:0')['model'])
+        decoder.load_state_dict(torch.load('saved_model/UncondDec_kanji.pt', map_location='cuda:0')['model'])
         data_enc, data_dec, max_seq_len = get_data(data_type='kanji')
     return encoder, decoder, hidden_enc_dim, latent_dim, max_seq_len, cond_gen, bi_mode, device
 

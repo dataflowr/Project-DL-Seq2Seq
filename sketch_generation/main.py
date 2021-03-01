@@ -38,7 +38,7 @@ eta_min = 0.01
 R_step =  0.99995
 learning_rate = 0.0008
 clip = 1.
-epochs = 200
+epochs = 100
 
 print_every = batch_size*200 # print loss after this much iteration, change the multiplier aacording to dataset
 plot_every = 10 # plot the strokes using current trained model
