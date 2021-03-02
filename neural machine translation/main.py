@@ -40,7 +40,6 @@ decoder_optimizer = optim.Adam(decoder.parameters(), lr=learning_rate)
 criterion = nn.NLLLoss()
 
 for i in range(epochs):
-  print(i)
   encoder_hidden = encoder.initHidden()
   
   training_pair = training_pairs[i - 1]
