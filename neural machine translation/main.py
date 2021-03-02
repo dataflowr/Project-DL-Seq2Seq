@@ -25,7 +25,7 @@ start = time.time()
 teacher_forcing_ratio = 0.5  # 50% teacher forcing and 50% scheduled sampling
 clip = 5.0
 max_length = 10
-fra_to_eng = False
+fra_to_eng = True
 attn_score = 'gen' # can be - 'gen', 'concat', 'dot'
 
 input_lang, output_lang, pairs = prepareData('eng', 'fra', fra_to_eng)
@@ -87,12 +87,12 @@ for i in range(epochs):
   if i % print_every == 0 and i > 0:
     print_loss_avg = print_loss_total / print_every
     print_loss_total = 0
-    print('\nEpoch \ttime&left \t\tdata seen \tloss')
+    print('\nEpoch \ttime&left \t\tprocess \tloss')
     print('%d \t%s \t(%d %d%%) \t%.4f' % (i, timeSince(start, i / epochs),
                                          i, i / epochs * 100, print_loss_avg))
     # print (decoder_attention)
     
-  print_loss+=1
+  # print_loss+=1
   
 if fra_to_eng:
     save_checkpoint(epochs, encoder, encoder_optimizer, 'saved_model/fra-eng', \
