@@ -8,7 +8,7 @@ from model import encoder_skrnn, decoder_skrnn, skrnn_loss, skrnn_sample
 from eval_skrnn import draw_image, load_pretrained_congen, load_pretrained_uncond
 import torch
 
-cond_gen = False
+cond_gen = True
 
 if not cond_gen:
     data_type = 'cat' # can be kanji character or cat
