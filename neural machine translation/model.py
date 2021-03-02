@@ -28,8 +28,7 @@ class EncoderRNN(nn.Module):
     def forward(self, input, hidden):
         seq_len = len(input)
         embedded = self.embedding(input).view(seq_len, 1, -1)
-        output = embedded
-        output, hidden = self.gru(output, hidden)
+        output, hidden = self.gru(embedded, hidden)
         return output, hidden
 
     def initHidden(self):

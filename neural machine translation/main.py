@@ -40,7 +40,7 @@ decoder_optimizer = optim.Adam(decoder.parameters(), lr=learning_rate)
 criterion = nn.NLLLoss()
 
 for i in range(epochs):
-  
+  print(i)
   encoder_hidden = encoder.initHidden()
   
   training_pair = training_pairs[i - 1]
@@ -48,18 +48,15 @@ for i in range(epochs):
   target_tensor = training_pair[1] 
   encoder_optimizer.zero_grad()
   decoder_optimizer.zero_grad()
-  loss = 0
+  loss = 0.
   
-  encoder_outputs, hidden = encoder( input_tensor, encoder_hidden)
+  encoder_outputs, hidden = encoder(input_tensor, encoder_hidden)
   
   encoder_outputs = encoder_outputs.squeeze(1)
   decoder_input = torch.tensor([[SOS_token]], device=device)
-  decoder_attentions = torch.zeros(max_length, max_length)
   decoder_attentions = []
   
-
   use_teacher_forcing = random.random() < teacher_forcing_ratio
-
   if use_teacher_forcing:
     for word in range(target_tensor.size()[0]):
       decoder_output, hidden, decoder_attention = decoder(decoder_input, hidden, encoder_outputs)
@@ -71,12 +68,12 @@ for i in range(epochs):
       decoder_output, hidden, decoder_attention = decoder(decoder_input, hidden, encoder_outputs)      
       topv, topi = decoder_output.data.topk(1)
       ni = topi[0][0]
+      loss += criterion(decoder_output, target_tensor[di])
       if ni == EOS_token:
           break
-      decoder_input = Variable(torch.cuda.LongTensor([[ni]]))      
+      decoder_input = Variable(torch.cuda.LongTensor([[ni]]))
       decoder_attentions.append(decoder_attention)
-      loss += criterion(decoder_output, target_tensor[di])
-  
+      
   loss.backward()
   
   torch.nn.utils.clip_grad_norm(encoder.parameters(), clip)
@@ -86,24 +83,25 @@ for i in range(epochs):
   decoder_optimizer.step()
   
   print_loss_total += loss.item()/target_tensor.size()[0]
-  plot_loss_total += loss
+  # plot_loss_total += loss
   
-  if i % print_every == 0:
+  if i % print_every == 0 and i > 0:
     print_loss_avg = print_loss_total / print_every
     print_loss_total = 0
-    print('%s (%d %d%%) %.4f' % (timeSince(start, i / epochs),
+    print('\nEpoch \ttime&left \t\tdata seen \tloss')
+    print('%d \t%s \t(%d %d%%) \t%.4f' % (i, timeSince(start, i / epochs),
                                          i, i / epochs * 100, print_loss_avg))
-    print (decoder_attention)
+    # print (decoder_attention)
     
   print_loss+=1
   
 if fra_to_eng:
-    save_checkpoint(epochs, encoder, encoder_optimizer, 'saved_model\fra-eng', \
+    save_checkpoint(epochs, encoder, encoder_optimizer, 'saved_model/fra-eng', \
                         filename='encoder.pt')
-    save_checkpoint(epochs, decoder, decoder_optimizer, 'saved_model\fra-eng', \
+    save_checkpoint(epochs, decoder, decoder_optimizer, 'saved_model/fra-eng', \
                         filename='decoder.pt')
 else:
-    save_checkpoint(epochs, encoder, encoder_optimizer, 'saved_model\eng-fra', \
+    save_checkpoint(epochs, encoder, encoder_optimizer, 'saved_model/eng-fra', \
                         filename='encoder.pt')
-    save_checkpoint(epochs, decoder, decoder_optimizer, 'saved_model\eng-fra', \
+    save_checkpoint(epochs, decoder, decoder_optimizer, 'saved_model/eng-fra', \
                         filename='decoder.pt')

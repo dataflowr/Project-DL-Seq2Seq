@@ -22,7 +22,7 @@ import time
 def asMinutes(s):
     m = math.floor(s / 60)
     s -= m * 60
-    return '%dm %ds' % (m, s)
+    return '%dm %02ds' % (m, s)
 
 
 def timeSince(since, percent):

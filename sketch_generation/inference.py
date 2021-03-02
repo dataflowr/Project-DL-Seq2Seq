@@ -11,10 +11,10 @@ import torch
 cond_gen = True
 
 if not cond_gen:
-    data_type = 'cat' # can be kanji character or cat
+    data_type = 'kanji' # can be kanji character or cat
 
     encoder, decoder, hid_dim, latent_dim, t_step, cond_gen, mode, device = load_pretrained_uncond(data_type)
-    strokes, mix_params = skrnn_sample(encoder, decoder, hid_dim, latent_dim, time_step=t_step, random_state=30 , \
+    strokes, mix_params = skrnn_sample(encoder, decoder, hid_dim, latent_dim, time_step=t_step, random_state=98 , \
                                                cond_gen=cond_gen, device=device, bi_mode= mode)
     draw_image(strokes, save=True, save_dir='drawings/unconditional/')
 
