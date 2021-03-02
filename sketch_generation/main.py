@@ -96,7 +96,7 @@ for epoch in range(epochs):
         loss_lr, loss_kl = skrnn_loss(gmm_params, [mu,sigma], inp_dec[:,1:,], device=device)
         loss_kl = torch.max(loss_kl, torch.tensor(kl_tolerance, dtype=torch.float, device=device))
         
-        # qanREIVIEW modified R_step to R**epoch
+        # modified R_step to R**epoch
         eta_step = 1 - (1-eta_min)*R_step**epoch
         
         loss = loss_lr + weight_kl*eta_step*loss_kl
