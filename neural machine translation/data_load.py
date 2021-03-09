@@ -22,7 +22,7 @@ import time
 def asMinutes(s):
     m = math.floor(s / 60)
     s -= m * 60
-    return '%dm %ds' % (m, s)
+    return '%dm %02ds' % (m, s)
 
 
 def timeSince(since, percent):
@@ -48,7 +48,7 @@ zip_ref.close()
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-torch.cuda.set_device(1)
+# torch.cuda.set_device(1)
 
 SOS_token = 0
 EOS_token = 1

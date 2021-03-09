@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from data_load import get_data
 from model import encoder_skrnn, decoder_skrnn
 
-def draw_image(a, color=None, save=False, save_dir=None):
+def array_to_strokes(a):
     x = np.cumsum(a[:,0], 0)
     y = np.cumsum(a[:,1], 0)
     
@@ -19,12 +19,28 @@ def draw_image(a, color=None, save=False, save_dir=None):
     cuts = np.where(a[:,2]>0)[0] + 1
     
     strokes = np.split(stroke[:-1],cuts)
+    return strokes
+
+def draw_image(a, color=None, save=False, save_dir=None, compare_to=None):
     
-    fig = plt.figure()
-    ax1 = fig.add_subplot(111)
-    
-    for s in strokes:
-        plt.plot(s[:,0],-s[:,1],color=color)
+    strokes = array_to_strokes(a)
+
+    if compare_to is None:
+        fig = plt.figure(figsize=(6.4, 4.8))
+        ax1 = fig.add_subplot(111)
+        for s in strokes:
+            ax1.plot(s[:,0],-s[:,1],color=color)
+    else:
+        fig = plt.figure(figsize=(12.8, 4.8))
+        ax1 = fig.add_subplot(122)   
+        for s in strokes:
+            ax1.plot(s[:,0],-s[:,1],color=color)
+
+        strokes_inp = array_to_strokes(compare_to)
+        ax2 = fig.add_subplot(121)
+        for s in strokes_inp:
+            ax2.plot(s[:, 0],-s[:,1],color=color)
+
     if save:
         file_name = save_dir+str(np.random.randint(0,5000))
         print(file_name)
@@ -63,12 +79,12 @@ def load_pretrained_uncond(data_type):
                             latent_dim = latent_dim, device = device, cond_gen= cond_gen).to(device)
 
     if data_type == 'cat':
-        encoder.load_state_dict(torch.load('saved_model/UncondEnc_cat.pt',map_location='cuda:0')['model'])
-        decoder.load_state_dict(torch.load('saved_model/UncondDec_cat.pt',map_location='cuda:0')['model'])
+        encoder.load_state_dict(torch.load('saved_model/UncondEnc_cat.pt', map_location='cuda:0')['model'])
+        decoder.load_state_dict(torch.load('saved_model/UncondDec_cat.pt', map_location='cuda:0')['model'])
         data_enc, data_dec, max_seq_len = get_data(data_type='cat')
     else:
-        encoder.load_state_dict(torch.load('saved_model/UncondEnc_kanji.pt')['model'])
-        decoder.load_state_dict(torch.load('saved_model/UncondDec_kanji.pt')['model'])
+        encoder.load_state_dict(torch.load('saved_model/UncondEnc_kanji.pt', map_location='cuda:0')['model'])
+        decoder.load_state_dict(torch.load('saved_model/UncondDec_kanji.pt', map_location='cuda:0')['model'])
         data_enc, data_dec, max_seq_len = get_data(data_type='kanji')
     return encoder, decoder, hidden_enc_dim, latent_dim, max_seq_len, cond_gen, bi_mode, device
 
@@ -101,11 +117,11 @@ def load_pretrained_congen(data_type):
                             dropout_p = dropout_p, n_layers = n_layers, batch_size = batch_size,\
                             latent_dim = latent_dim, device = device, cond_gen= cond_gen).to(device)
     if data_type == 'cat':
-        encoder.load_state_dict(torch.load('saved_model/condEnc_cat.pt')['model'])
-        decoder.load_state_dict(torch.load('saved_model/condDec_cat.pt')['model'])
+        encoder.load_state_dict(torch.load('saved_model/condEnc_cat.pt', map_location='cuda:0')['model'])
+        decoder.load_state_dict(torch.load('saved_model/condDec_cat.pt', map_location='cuda:0')['model'])
         data_enc, data_dec, max_seq_len = get_data(data_type='cat')
     else:
-        encoder.load_state_dict(torch.load('saved_model/condEnc_kanji.pt')['model'])
-        decoder.load_state_dict(torch.load('saved_model/condDec_kanji.pt')['model'])
+        encoder.load_state_dict(torch.load('saved_model/condEnc_kanji.pt', map_location='cuda:0')['model'])
+        decoder.load_state_dict(torch.load('saved_model/condDec_kanji.pt', map_location='cuda:0')['model'])
         data_enc, data_dec, max_seq_len = get_data(data_type='kanji')
     return encoder, decoder, hidden_dec_dim, latent_dim, max_seq_len, cond_gen, bi_mode, device

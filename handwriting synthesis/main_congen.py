@@ -81,7 +81,8 @@ for big_epoch in range(epochs):
         print_loss_avg = print_loss_total / print_every
         print_loss_total = 0
         #print(print_loss_avg)
-        print('%d  %s (%d %d%%) %.4f' % (big_epoch,timeSince(start, i / num_mini_batch),
+        # print('\nEpoch \ttime&left \t\tdata seeen   \terror')
+        print('%d  \t%s \t(%d %d%%) \t%.4f' % (big_epoch,timeSince(start, i / num_mini_batch),
                                              i, i / num_mini_batch * 100, print_loss_avg))  
       print_loss+=1
       

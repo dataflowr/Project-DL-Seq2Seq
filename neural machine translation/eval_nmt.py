@@ -14,7 +14,7 @@ import torch
 def load_pre_trained(lang):
     ####################################################
     # default parameters, do not change
-    fra_to_eng = False
+    fra_to_eng = False if lang=='eng-fra' else True
     hidden_size = 500
     n_layers = 2
     dropout_p = 0.05
@@ -32,9 +32,9 @@ def load_pre_trained(lang):
         encoder.load_state_dict(torch.load('saved_model/fra-eng/encoder.pt')['model'])
         decoder.load_state_dict(torch.load('saved_model/fra-eng/decoder.pt')['model'])
 
-    return encoder, decoder
+    return encoder, decoder, input_lang, output_lang, pairs
 
-def evaluate(sentence, encoder, decoder, max_length=MAX_LENGTH):
+def evaluate(sentence, input_lang, output_lang, encoder, decoder, max_length=MAX_LENGTH):
     with torch.no_grad():
         input_tensor = tensorFromSentence(input_lang, sentence)
         input_length = input_tensor.size()[0]
@@ -95,10 +95,10 @@ def evalRand(n=1):
         print('')
         maxi = max(len(pair[0].split()),len(output_words))
         
-def evalText(inp, encoder, decoder, inp_lang = 'English', out_lang = 'French'):
-    print('%s Text -->'%inp_lang, inp)
-    output_words, attn = evaluate(inp, encoder, decoder)
+def evalText(inp, encoder, decoder, input_lang, output_lang):
+    print('%s text -->'%input_lang.name, inp)
+    output_words, attn = evaluate(inp, input_lang, output_lang, encoder, decoder)
     output_sentence = ' '.join(output_words)
-    print('%s o/p -->'%out_lang, output_sentence)
+    print('%s o/p -->'%output_lang.name, output_sentence)
     print('')
     return inp, output_words, attn

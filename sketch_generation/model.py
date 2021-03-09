@@ -50,7 +50,7 @@ class encoder_skrnn(nn.Module):
         sigma_hat = self.sigma(hidden_cat)
         sigma = torch.exp(sigma_hat/2.)
         
-        z = mu + sigma*torch.normal(torch.zeros(self.Nz,device=self.device),torch.ones(self.Nz, device=self.device))
+        z = mu + sigma*torch.normal(torch.zeros(self.Nz,device=self.device), torch.ones(self.Nz, device=self.device))
 
         initial_params = torch.tanh(self.initial(z))
         
@@ -146,7 +146,7 @@ def skrnn_loss(gmm_params, kl_params, data, mask=[], device =None):
     mask_zero_out = 1-eos[:,2]
     
     Ls = torch.mul(Ls, mask_zero_out.view(-1,1))
-    Lp = -torch.sum(eos*torch.log(q_t), -1).view(-1,1)
+    Lp = -torch.sum(eos*torch.log(q_t+epsilon), -1).view(-1,1)
     Lr = Ls + Lp
     mu, sigma = kl_params[0], kl_params[1]
 
@@ -163,6 +163,7 @@ def skrnn_sample(encoder, decoder, hidden_size, latent_dim, start=[0,0,1,0,0], t
     decoder.train(False)
 
     def adjust_temp(pi_pdf, temp):
+        # is -= pi_pdf.max() is necessary ???
         pi_pdf = np.log(pi_pdf) / temp
         pi_pdf -= pi_pdf.max()
         pi_pdf = np.exp(pi_pdf)
@@ -182,8 +183,9 @@ def skrnn_sample(encoder, decoder, hidden_size, latent_dim, start=[0,0,1,0,0], t
         return -1
     
     def sample_gaussian_2d(mu1, mu2, s1, s2, rho, temp=1.0):
-        s1 *= temp * temp
-        s2 *= temp * temp
+        # s1, s2 *= temp**0.5
+        s1 *= temp**0.5
+        s2 *= temp**0.5
         mean = [mu1, mu2]
         cov = [[s1 * s1, rho * s1 * s2], [rho * s1 * s2, s2 * s2]]
         x = np.random.multivariate_normal(mean, cov, 1)

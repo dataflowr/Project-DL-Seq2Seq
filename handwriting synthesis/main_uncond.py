@@ -71,17 +71,18 @@ for big_epoch in range(epochs):
       model_optimizer.step()
       
       print_loss_total += loss.item()/target_tensor.size()[1]
-      
+          
       if i % print_every == 0 and i>0:
         print_loss_avg = print_loss_total / print_every
         print_loss_total = 0
-        print('%d  %s (%d %d%%) %.4f' % (big_epoch,timeSince(start, i / num_mini_batch),
+        # print('\n Epoch \ttime&left \t\tdata seen \terror')
+        print('%d  \t%s \t(%d %d%%) \t%.4f' % (big_epoch,timeSince(start, i / num_mini_batch),
                                              i, i / num_mini_batch * 100, print_loss_avg))
       print_loss+=1
         
     if big_epoch % plot_every == 0 and big_epoch>0:
-        a,b = sample_uncond(lr_model,hidden_size,time_step=800)
-        plot_stroke(a)
-        
-save_checkpoint(big_epoch, lr_model, model_optimizer, 'saved_model', \
+        # a,b = sample_uncond(lr_model,hidden_size,time_step=800)
+        # plot_stroke(a)
+
+        save_checkpoint(big_epoch, lr_model, model_optimizer, 'saved_model', \
                     filename='model_uncond.pt')

@@ -79,7 +79,7 @@ def load_pretrained_congen():
                      dropout_p = dropout_p, n_layers= n_layers, batch_size=batch_size,\
                      num_attn_gaussian = num_attn_gaussian, rnn_type = rnn_type).to(device)
     
-    lr_model.load_state_dict(torch.load('saved_model/model_congen.pt')['model'])
+    lr_model.load_state_dict(torch.load('saved_model/model_congen.pt', map_location='cuda:0')['model'])
     return lr_model, char_to_vec, hidden_size
 
 def phi_window_plots(phis, windows):
@@ -96,7 +96,12 @@ def phi_window_plots(phis, windows):
     plt.ylabel("one-hot char vector", fontsize=15)
     plt.xlabel("time steps", fontsize=15)
     plt.imshow(windows, interpolation='nearest', aspect='auto', cmap=cm.gist_stern)
-    
+    plt.show()
+
+def gaussian_distribution(X, Y, mux, muy, sigmax, sigmay, rho):
+    assert X.shape == Y.shape
+    quad = (X-mux)**2 / sigmax**2 + (Y-muy)**2 / sigmay**2 - 2*rho*(X-mux)*(Y-muy)/sigmax/sigmay
+    return np.exp(-quad/2/(1-rho**2))/2/np.pi/sigmax/sigmay/(1-rho**2)**0.5
 
 def gauss_params_plot(strokes, title ='Distribution of Gaussian Mixture parameters', figsize = (20,2)):
     plt.figure(figsize=figsize)
@@ -104,19 +109,21 @@ def gauss_params_plot(strokes, title ='Distribution of Gaussian Mixture paramete
     buff = 1 ; epsilon = 1e-4
     minx, maxx = np.min(strokes[:,0])-buff, np.max(strokes[:,0])+buff
     miny, maxy = np.min(strokes[:,1])-buff, np.max(strokes[:,1])+buff
-    delta = abs(maxx-minx)/400. ;
+    delta = abs(maxx-minx)/400. 
     
     x = np.arange(minx, maxx, delta)
     y = np.arange(miny, maxy, delta)
     X, Y = np.meshgrid(x, y)
     Z = np.zeros_like(X)
     for i in range(strokes.shape[0]):
-        gauss = mlab.bivariate_normal(X, Y, mux=strokes[i,0], muy=strokes[i,1], \
-            sigmax=strokes[i,2], sigmay=strokes[i,3], sigmaxy=0) # sigmaxy=strokes[i,4] gives error
+        # gauss = mlab.bivariate_normal(X, Y, mux=strokes[i,0], muy=strokes[i,1], \
+            # sigmax=strokes[i,2], sigmay=strokes[i,3], sigmaxy=0) # sigmaxy=strokes[i,4] gives error
+        gauss = gaussian_distribution(X, Y, strokes[i,0], strokes[i,1], strokes[i,2], strokes[i,3], strokes[i,4])
         Z += gauss * np.power(strokes[i,3] + strokes[i,2], .4) / (np.max(gauss) + epsilon)
     
     plt.title(title, fontsize=20)
     plt.imshow(np.flipud(Z), cmap=cm.gnuplot)
+    plt.show()
     
 def plot_stroke(stroke, save_name=None):
     # Plot a single example.

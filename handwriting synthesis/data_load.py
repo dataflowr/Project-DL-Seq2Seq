@@ -22,11 +22,11 @@ from torch.nn.parameter import Parameter
 
 warnings.simplefilter('ignore')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-torch.cuda.set_device(1)
+# torch.cuda.set_device(1)
 
 from eval_hand import *
 
-strokes = np.load('data/strokes.npy', encoding='latin1')
+strokes = np.load('data/strokes.npy', encoding='latin1', allow_pickle=True)
 stroke = strokes[0]
 
 with open('data/sentences.txt') as f:
@@ -53,7 +53,7 @@ import math
 def asMinutes(s):
     m = math.floor(s / 60)
     s -= m * 60
-    return '%dm %ds' % (m, s)
+    return '%dm %02ds' % (m, s)
 
 
 def timeSince(since, percent):
