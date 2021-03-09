@@ -38,15 +38,15 @@ eta_min = 0.01
 R_step =  0.99995
 learning_rate = 0.0008
 clip = 1.
-epochs = 100
+epochs = 300
 
-print_every = batch_size*200 # print loss after this much iteration, change the multiplier aacording to dataset
+print_every = batch_size*50 # print loss after this much iteration, change the multiplier aacording to dataset
 plot_every = 10 # plot the strokes using current trained model
 
 rnn_dir = 2 # 1 for unidirection,  2 for bi-direction
 bi_mode = 2 # bidirectional mode:- 1 for addition 2 for concatenation
-cond_gen = False # use either unconditional or conditional generation
-data_type = 'cat' # 'cat' and 'kanji'
+cond_gen = True # use either unconditional or conditional generation
+data_type = 'kanji' # 'cat' and 'kanji'
 
 if not cond_gen:
     weight_kl = 0.0

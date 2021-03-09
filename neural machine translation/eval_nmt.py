@@ -84,7 +84,7 @@ def viz_attn(input_sentence, output_words, attentions):
 
     plt.show()
     
-def evalRand(n=1, pairs):
+def evalRand(n=1):
     for i in range(n):
         pair = random.choice(pairs)
         print('French Text -->', pair[0])

@@ -14,12 +14,12 @@ if not cond_gen:
     data_type = 'kanji' # can be kanji character or cat
 
     encoder, decoder, hid_dim, latent_dim, t_step, cond_gen, mode, device = load_pretrained_uncond(data_type)
-    strokes, mix_params = skrnn_sample(encoder, decoder, hid_dim, latent_dim, time_step=t_step, random_state=98 , \
+    strokes, mix_params = skrnn_sample(encoder, decoder, hid_dim, latent_dim, time_step=t_step, random_state=49 , \
                                                cond_gen=cond_gen, device=device, bi_mode= mode)
     draw_image(strokes, save=True, save_dir='drawings/unconditional/')
 
 else:
-    data_type = 'cat' # can be kanji character or cat
+    data_type = 'kanji' # can be kanji character or cat
     mode='test' if data_type=='cat' else 'train'
 
     data_enc, _ , _ = get_data(data_type=data_type, mode=mode) 

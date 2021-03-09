@@ -165,7 +165,7 @@ def skrnn_sample(encoder, decoder, hidden_size, latent_dim, start=[0,0,1,0,0], t
     def adjust_temp(pi_pdf, temp):
         # is -= pi_pdf.max() is necessary ???
         pi_pdf = np.log(pi_pdf) / temp
-        # pi_pdf -= pi_pdf.max()
+        pi_pdf -= pi_pdf.max()
         pi_pdf = np.exp(pi_pdf)
         pi_pdf /= pi_pdf.sum()
         return pi_pdf
